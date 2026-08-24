@@ -1,0 +1,501 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.internal/global-auto/spec/calculation_dsl.schema.json",
+  "title": "Global Automotive KD Calculation DSL",
+  "description": "A deterministic, non-eval expression contract for eligibility and tax calculations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "dsl_version",
+    "scenario_code",
+    "inputs",
+    "steps",
+    "outputs",
+    "completeness_policy"
+  ],
+  "properties": {
+    "dsl_version": {
+      "const": "0.1.0"
+    },
+    "scenario_code": {
+      "$ref": "#/$defs/code"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/input_definition"
+      },
+      "minItems": 1
+    },
+    "scenario_applies_when": {
+      "$ref": "#/$defs/condition"
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/calculation_step"
+      },
+      "minItems": 1
+    },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/output_definition"
+      },
+      "minItems": 1
+    },
+    "fallback_scenario_code": {
+      "$ref": "#/$defs/code"
+    },
+    "completeness_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unknown_rate",
+        "missing_required_input",
+        "failed_eligibility"
+      ],
+      "properties": {
+        "unknown_rate": {
+          "$ref": "#/$defs/on_missing"
+        },
+        "missing_required_input": {
+          "$ref": "#/$defs/on_missing"
+        },
+        "failed_eligibility": {
+          "$ref": "#/$defs/on_missing"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "code": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,63}$"
+    },
+    "data_path": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+    },
+    "scalar": {
+      "type": [
+        "string",
+        "number",
+        "integer",
+        "boolean",
+        "null"
+      ]
+    },
+    "input_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "type",
+        "required",
+        "ownership"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/data_path"
+        },
+        "type": {
+          "enum": [
+            "string",
+            "integer",
+            "decimal",
+            "boolean",
+            "date",
+            "currency",
+            "country_code",
+            "enum",
+            "object",
+            "array"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "ownership": {
+          "enum": [
+            "PUBLIC",
+            "ENTERPRISE",
+            "MIXED"
+          ]
+        },
+        "enum_values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "operator"
+      ],
+      "properties": {
+        "field": {
+          "$ref": "#/$defs/data_path"
+        },
+        "operator": {
+          "enum": [
+            "EQ",
+            "NE",
+            "GT",
+            "GTE",
+            "LT",
+            "LTE",
+            "IN",
+            "NOT_IN",
+            "IS_NULL",
+            "IS_NOT_NULL"
+          ]
+        },
+        "value": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/scalar"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/scalar"
+              }
+            }
+          ]
+        },
+        "value_ref": {
+          "$ref": "#/$defs/data_path"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operator": {
+                "enum": [
+                  "IS_NULL",
+                  "IS_NOT_NULL"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "value"
+                  ]
+                },
+                {
+                  "required": [
+                    "value_ref"
+                  ]
+                }
+              ]
+            }
+          },
+          "else": {
+            "oneOf": [
+              {
+                "required": [
+                  "value"
+                ]
+              },
+              {
+                "required": [
+                  "value_ref"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "condition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/predicate"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "all"
+          ],
+          "properties": {
+            "all": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "any"
+          ],
+          "properties": {
+            "any": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/condition"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "not"
+          ],
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        }
+      ]
+    },
+    "number_literal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "number"
+      ],
+      "properties": {
+        "number": {
+          "type": "number"
+        }
+      }
+    },
+    "numeric_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/data_path"
+        }
+      }
+    },
+    "numeric_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "op",
+        "args"
+      ],
+      "properties": {
+        "op": {
+          "enum": [
+            "ADD",
+            "SUBTRACT",
+            "MULTIPLY",
+            "DIVIDE",
+            "SUM",
+            "MIN",
+            "MAX",
+            "COALESCE",
+            "ROUND",
+            "NEGATE"
+          ]
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/numeric_expression"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "numeric_expression": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/number_literal"
+        },
+        {
+          "$ref": "#/$defs/numeric_reference"
+        },
+        {
+          "$ref": "#/$defs/numeric_operation"
+        }
+      ]
+    },
+    "rate_source": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "reference"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "COUNTRY_RULE",
+                "TARIFF_MAPPING",
+                "INPUT"
+              ]
+            },
+            "reference": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "value"
+          ],
+          "properties": {
+            "type": {
+              "const": "CONSTANT"
+            },
+            "value": {
+              "type": "number"
+            },
+            "justification_source_clause_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      ]
+    },
+    "on_missing": {
+      "enum": [
+        "BLOCK",
+        "PARTIAL",
+        "FALLBACK"
+      ]
+    },
+    "calculation_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "step_id",
+        "sequence_no",
+        "tax_code",
+        "base",
+        "rate_source",
+        "amount",
+        "on_missing"
+      ],
+      "properties": {
+        "step_id": {
+          "$ref": "#/$defs/code"
+        },
+        "sequence_no": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "tax_code": {
+          "$ref": "#/$defs/code"
+        },
+        "applies_when": {
+          "$ref": "#/$defs/condition"
+        },
+        "eligibility_requirement_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/code"
+          },
+          "uniqueItems": true
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/code"
+          },
+          "uniqueItems": true
+        },
+        "base": {
+          "$ref": "#/$defs/numeric_expression"
+        },
+        "rate_source": {
+          "$ref": "#/$defs/rate_source"
+        },
+        "amount": {
+          "$ref": "#/$defs/numeric_expression"
+        },
+        "recoverable_fraction": {
+          "$ref": "#/$defs/numeric_expression"
+        },
+        "rounding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scale",
+            "mode"
+          ],
+          "properties": {
+            "scale": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 8
+            },
+            "mode": {
+              "enum": [
+                "HALF_UP",
+                "HALF_EVEN",
+                "DOWN",
+                "UP"
+              ]
+            }
+          }
+        },
+        "on_missing": {
+          "$ref": "#/$defs/on_missing"
+        },
+        "display_formula": {
+          "type": "string",
+          "description": "Human-readable only; never executed."
+        }
+      }
+    },
+    "output_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "expression"
+      ],
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "expression": {
+          "$ref": "#/$defs/numeric_expression"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

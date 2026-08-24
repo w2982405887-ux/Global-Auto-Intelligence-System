@@ -1,0 +1,49 @@
+version: 0.1.0
+country: MY
+tariff_version: PDK 2025
+scope_note: >
+  Phase 1 stable customs-classification units 21-60. Candidate HS6 codes are
+  research routes, not final enterprise-part classifications. Final selection
+  remains blocked until every required use-time technical field is supplied.
+
+units:
+  - {seq: 21, code: CCU-PASSENGER-CAR-TYRE, name_cn: 乘用车充气轮胎, system: WHEEL_AND_TYRE, hs6_candidates: [401110]}
+  - {seq: 22, code: CCU-SPARK-IGNITION-ENGINE, name_cn: 乘用车点燃式活塞发动机, system: ICE_POWERTRAIN, hs6_candidates: [840734]}
+  - {seq: 23, code: CCU-DIESEL-VEHICLE-ENGINE, name_cn: 机动车压燃式活塞发动机, system: ICE_POWERTRAIN, hs6_candidates: [840820]}
+  - {seq: 24, code: CCU-ENGINE-BLOCK-OR-HEAD, name_cn: 发动机缸体或缸盖, system: ICE_POWERTRAIN, hs6_candidates: [840991, 840999]}
+  - {seq: 25, code: CCU-ENGINE-FUEL-PUMP, name_cn: 发动机燃油泵, system: FUEL_SYSTEM, hs6_candidates: [841330]}
+  - {seq: 26, code: CCU-ENGINE-OIL-FILTER, name_cn: 发动机机油滤清器, system: ICE_POWERTRAIN, hs6_candidates: [842123]}
+  - {seq: 27, code: CCU-ENGINE-INTAKE-AIR-FILTER, name_cn: 发动机进气滤清器, system: ICE_POWERTRAIN, hs6_candidates: [842131]}
+  - {seq: 28, code: CCU-CATALYTIC-CONVERTER, name_cn: 机动车尾气催化转化器, system: EXHAUST_AFTERTREATMENT, hs6_candidates: [842132]}
+  - {seq: 29, code: CCU-EXHAUST-SILENCER-PIPE, name_cn: 消声器及排气管, system: EXHAUST_AFTERTREATMENT, hs6_candidates: [870892]}
+  - {seq: 30, code: CCU-VEHICLE-FUEL-TANK, name_cn: 机动车燃油箱, system: FUEL_SYSTEM, hs6_candidates: [870899]}
+  - {seq: 31, code: CCU-ENGINE-FUEL-INJECTOR, name_cn: 发动机燃油喷射器, system: FUEL_SYSTEM, hs6_candidates: [840991, 840999]}
+  - {seq: 32, code: CCU-SPARK-PLUG, name_cn: 火花塞, system: ICE_ELECTRICAL, hs6_candidates: [851110]}
+  - {seq: 33, code: CCU-IGNITION-COIL-DISTRIBUTOR, name_cn: 点火线圈或分电器, system: ICE_ELECTRICAL, hs6_candidates: [851130]}
+  - {seq: 34, code: CCU-STARTER-MOTOR, name_cn: 起动电机, system: ICE_ELECTRICAL, hs6_candidates: [851140]}
+  - {seq: 35, code: CCU-VEHICLE-ALTERNATOR, name_cn: 机动车交流发电机, system: ICE_ELECTRICAL, hs6_candidates: [851150]}
+  - {seq: 36, code: CCU-VEHICLE-CONTROL-ECU, name_cn: 机动车电子控制单元, system: VEHICLE_ELECTRONICS, hs6_candidates: [853710, 903289]}
+  - {seq: 37, code: CCU-INSTRUMENT-CLUSTER, name_cn: 机动车仪表总成, system: VEHICLE_ELECTRONICS, hs6_candidates: [902920, 853120]}
+  - {seq: 38, code: CCU-VEHICLE-INFOTAINMENT-HEAD-UNIT, name_cn: 车载信息娱乐主机, system: INFOTAINMENT, hs6_candidates: [852721]}
+  - {seq: 39, code: CCU-VEHICLE-LOUDSPEAKER, name_cn: 机动车扬声器总成, system: INFOTAINMENT, hs6_candidates: [851829]}
+  - {seq: 40, code: CCU-REAR-VIEW-MIRROR, name_cn: 机动车后视镜, system: VISIBILITY_LIGHTING, hs6_candidates: [700910]}
+  - {seq: 41, code: CCU-WINDSCREEN-WIPER, name_cn: 风挡刮水器, system: VISIBILITY_LIGHTING, hs6_candidates: [851240]}
+  - {seq: 42, code: CCU-VEHICLE-HORN, name_cn: 机动车喇叭, system: VEHICLE_ELECTRICAL, hs6_candidates: [851230]}
+  - {seq: 43, code: CCU-VEHICLE-HVAC-UNIT, name_cn: 机动车空调机组, system: THERMAL_MANAGEMENT, hs6_candidates: [841520]}
+  - {seq: 44, code: CCU-VEHICLE-COOLANT-PUMP, name_cn: 机动车冷却液泵, system: THERMAL_MANAGEMENT, hs6_candidates: [841330, 841381]}
+  - {seq: 45, code: CCU-BRAKE-FRICTION-PAD-LINING, name_cn: 制动摩擦片或衬片, system: BRAKING, hs6_candidates: [681381]}
+  - {seq: 46, code: CCU-BRAKE-MASTER-CYLINDER, name_cn: 制动主缸, system: BRAKING, hs6_candidates: [870830]}
+  - {seq: 47, code: CCU-BRAKE-HOSE-ASSEMBLY, name_cn: 制动软管总成, system: BRAKING, hs6_candidates: [400932]}
+  - {seq: 48, code: CCU-SUSPENSION-COIL-SPRING, name_cn: 悬架螺旋弹簧, system: SUSPENSION, hs6_candidates: [732020]}
+  - {seq: 49, code: CCU-SUSPENSION-LEAF-SPRING, name_cn: 悬架钢板弹簧, system: SUSPENSION, hs6_candidates: [732010]}
+  - {seq: 50, code: CCU-SUSPENSION-CONTROL-ARM, name_cn: 悬架控制臂, system: SUSPENSION, hs6_candidates: [870880]}
+  - {seq: 51, code: CCU-STABILIZER-BAR, name_cn: 悬架稳定杆, system: SUSPENSION, hs6_candidates: [870880]}
+  - {seq: 52, code: CCU-VEHICLE-DOOR-ASSEMBLY, name_cn: 机动车车门总成, system: BODY, hs6_candidates: [870829]}
+  - {seq: 53, code: CCU-VEHICLE-HOOD-BONNET, name_cn: 机动车发动机罩, system: BODY, hs6_candidates: [870829]}
+  - {seq: 54, code: CCU-VEHICLE-FENDER-PANEL, name_cn: 机动车翼子板, system: BODY, hs6_candidates: [870829]}
+  - {seq: 55, code: CCU-INSTRUMENT-PANEL-DASHBOARD, name_cn: 仪表板骨架或总成, system: INTERIOR, hs6_candidates: [870829]}
+  - {seq: 56, code: CCU-POWER-WINDOW-REGULATOR-MOTOR, name_cn: 电动车窗升降器或电机, system: BODY_ELECTRICAL, hs6_candidates: [870829, 850131]}
+  - {seq: 57, code: CCU-VEHICLE-GEARBOX-TRANSMISSION, name_cn: 机动车变速器, system: DRIVELINE, hs6_candidates: [870840]}
+  - {seq: 58, code: CCU-VEHICLE-CLUTCH, name_cn: 机动车离合器, system: DRIVELINE, hs6_candidates: [870893]}
+  - {seq: 59, code: CCU-PROPELLER-DRIVE-SHAFT, name_cn: 传动轴, system: DRIVELINE, hs6_candidates: [870899]}
+  - {seq: 60, code: CCU-STEERING-WHEEL, name_cn: 机动车方向盘, system: STEERING, hs6_candidates: [870894]}

@@ -1,0 +1,333 @@
+export type PolicyStatus = "已确认" | "待核验" | "趋势研判";
+
+export type CountryIntel = {
+  id: string;
+  code: string;
+  name: string;
+  englishName: string;
+  lat: number;
+  lng: number;
+  region: string;
+  completeness: number;
+  updateCount: number;
+  status: PolicyStatus;
+  headline: string;
+  currentPolicy: string;
+  futurePolicy: string;
+  risk: string;
+  updatedAt: string;
+};
+
+/**
+ * Frontend capability registry for the generic solution-estimate entry.
+ *
+ * Keep this separate from the country intelligence copy: a country can be
+ * visible in the globe before its calculation module is implemented.  The
+ * entry page must use this registry to show an explicit "under construction"
+ * state instead of silently falling back to Malaysia or Vietnam.
+ */
+export type DecisionCapability = {
+  cbu: boolean;
+  ckd: boolean;
+};
+
+export const countryDecisionCapabilities: Record<string, DecisionCapability> = {
+  MY: { cbu: true, ckd: true },
+  VN: { cbu: true, ckd: true },
+};
+
+export function getDecisionCapability(countryCode: string): DecisionCapability {
+  return countryDecisionCapabilities[countryCode.toUpperCase()] ?? {
+    cbu: false,
+    ckd: false,
+  };
+}
+
+export const countries: CountryIntel[] = [
+  {
+    id: "malaysia",
+    code: "MY",
+    name: "马来西亚",
+    englishName: "Malaysia",
+    lat: 4.2,
+    lng: 102,
+    region: "东南亚",
+    completeness: 78,
+    updateCount: 6,
+    status: "已确认",
+    headline: "CKD纯电车型优惠仍是本地组装方案的核心变量",
+    currentPolicy: "已建立CKD、CBU及EV优惠的规则框架，等待车型与项目批准信息。",
+    futurePolicy: "已公布政策节点将进入下一阶段，需持续核验优惠期限及资格变化。",
+    risk: "零件税号、项目批准和原产地资格会直接改变最终税负。",
+    updatedAt: "2小时前",
+  },
+  {
+    id: "thailand",
+    code: "TH",
+    name: "泰国",
+    englishName: "Thailand",
+    lat: 15.8,
+    lng: 100.8,
+    region: "东南亚",
+    completeness: 69,
+    updateCount: 4,
+    status: "待核验",
+    headline: "EV3.5履约成本需要与进口优惠放在同一方案中评估",
+    currentPolicy: "消费税框架已建立，普通进口关税与项目级资格仍需补充。",
+    futurePolicy: "本地产量抵偿要求将成为2026年以后方案成本的重要组成。",
+    risk: "未完成产量抵偿可能产生追缴、资金占用和额外履约成本。",
+    updatedAt: "5小时前",
+  },
+  {
+    id: "vietnam",
+    code: "VN",
+    name: "越南",
+    englishName: "Vietnam",
+    lat: 15.9,
+    lng: 106,
+    region: "东南亚",
+    completeness: 64,
+    updateCount: 3,
+    status: "已确认",
+    headline: "BEV需求侧优惠明确，进口环节仍需补齐税基链条",
+    currentPolicy: "特别消费税和首次登记费政策已进入结构化规则库。",
+    futurePolicy: "2031年起的特别消费税变化已设置未来生效节点。",
+    risk: "进口关税、VAT及特别消费税法定税基仍决定计算完整度。",
+    updatedAt: "昨天",
+  },
+  {
+    id: "indonesia",
+    code: "ID",
+    name: "印度尼西亚",
+    englishName: "Indonesia",
+    lat: -2.5,
+    lng: 118,
+    region: "东南亚",
+    completeness: 61,
+    updateCount: 5,
+    status: "待核验",
+    headline: "TKDN门槛上升将重新排序CBU与本地生产方案",
+    currentPolicy: "合格项目PPnBM有效税额可为零，企业资格需要逐项目确认。",
+    futurePolicy: "2027—2029年TKDN门槛将提升至60%。",
+    risk: "BOM价值口径、证书和过渡细则可能改变本地化结论。",
+    updatedAt: "1天前",
+  },
+  {
+    id: "india",
+    code: "IN",
+    name: "印度",
+    englishName: "India",
+    lat: 22.8,
+    lng: 79,
+    region: "南亚",
+    completeness: 67,
+    updateCount: 4,
+    status: "已确认",
+    headline: "KD拆解状态决定15%、35%与整车税率分支",
+    currentPolicy: "BCD分支已建立，AIDC、IGST和套件归类仍影响落地税负。",
+    futurePolicy: "企业优惠申请状态需与一般进口税率分开维护。",
+    risk: "GRI 2(a)可能将拆散套件重新认定为完整车辆。",
+    updatedAt: "3小时前",
+  },
+  {
+    id: "pakistan",
+    code: "PK",
+    name: "巴基斯坦",
+    englishName: "Pakistan",
+    lat: 30.4,
+    lng: 69.3,
+    region: "南亚",
+    completeness: 52,
+    updateCount: 7,
+    status: "待核验",
+    headline: "CKD关税能够分组计算，CBU总税负仍存在关键缺口",
+    currentPolicy: "EV专用、非本地化与本地化零件三类关税已形成计算框架。",
+    futurePolicy: "现行部分优惠到期后的税率需要建立新时间节点。",
+    risk: "RD、销售税和预缴所得税会显著改变边境现金支出。",
+    updatedAt: "7小时前",
+  },
+  {
+    id: "iran",
+    code: "IR",
+    name: "伊朗",
+    englishName: "Iran",
+    lat: 32.4,
+    lng: 53.7,
+    region: "中东",
+    completeness: 43,
+    updateCount: 8,
+    status: "趋势研判",
+    headline: "许可、外汇与协定资格需要与税率同时判断",
+    currentPolicy: "当前只能建立条件性税率框架，尚不能输出完整综合税率。",
+    futurePolicy: "EAEU相关安排可能形成新路径，但汽车产品必须逐税号核验。",
+    risk: "外汇来源、配额和禁限进口可能让低税率方案无法执行。",
+    updatedAt: "40分钟前",
+  },
+  {
+    id: "egypt",
+    code: "EG",
+    name: "埃及",
+    englishName: "Egypt",
+    lat: 26.8,
+    lng: 30.8,
+    region: "北非",
+    completeness: 58,
+    updateCount: 3,
+    status: "已确认",
+    headline: "AIDP激励可计算，边境税费链条仍需补齐",
+    currentPolicy: "本地化率、产量和补贴上限已形成资格矩阵。",
+    futurePolicy: "本地生产激励兑现需要持续跟踪项目批准和车型条件。",
+    risk: "CBU与CKD基础税费缺失时不能把补贴优势等同综合税率。",
+    updatedAt: "昨天",
+  },
+  {
+    id: "south-africa",
+    code: "ZA",
+    name: "南非",
+    englishName: "South Africa",
+    lat: -30.6,
+    lng: 22.9,
+    region: "南部非洲",
+    completeness: 65,
+    updateCount: 2,
+    status: "已确认",
+    headline: "进口税、生产返还和投资税盾需分层计算",
+    currentPolicy: "CBU关税与部分资本优惠已经进入场景模型。",
+    futurePolicy: "NEV投资政策将继续影响本地生产的长期净成本。",
+    risk: "APDP信用、从价消费税及项目资格不可简单相加。",
+    updatedAt: "2天前",
+  },
+  {
+    id: "uzbekistan",
+    code: "UZ",
+    name: "乌兹别克斯坦",
+    englishName: "Uzbekistan",
+    lat: 41.4,
+    lng: 64.6,
+    region: "中亚",
+    completeness: 55,
+    updateCount: 2,
+    status: "待核验",
+    headline: "投入品免税与利用费优惠需按项目资格执行",
+    currentPolicy: "指定投入品关税和部分本地制造利用费优惠可条件计算。",
+    futurePolicy: "产业政策变化可能继续偏向本地生产。",
+    risk: "普通CBU税负和非合格零部件税率仍需补齐。",
+    updatedAt: "2天前",
+  },
+  {
+    id: "kazakhstan",
+    code: "KZ",
+    name: "哈萨克斯坦",
+    englishName: "Kazakhstan",
+    lat: 48,
+    lng: 67.3,
+    region: "中亚",
+    completeness: 57,
+    updateCount: 4,
+    status: "已确认",
+    headline: "EAEU共同税率之外，本地装配与出口资格是下一步重点",
+    currentPolicy: "纯电CBU关税情景已建立，VAT和利用费仍需进入公式。",
+    futurePolicy: "对伊朗出口的协定待遇需要逐税号和原产地规则验证。",
+    risk: "本地增加值不足可能无法取得EAEU原产资格。",
+    updatedAt: "8小时前",
+  },
+  {
+    id: "belarus",
+    code: "BY",
+    name: "白俄罗斯",
+    englishName: "Belarus",
+    lat: 53.7,
+    lng: 27.9,
+    region: "东欧",
+    completeness: 54,
+    updateCount: 5,
+    status: "待核验",
+    headline: "配额内外是两套完全不同的进口成本情景",
+    currentPolicy: "纯电车配额内零关税与配额外税率已经分支建模。",
+    futurePolicy: "下一年度配额及恢复税率安排需要滚动更新。",
+    risk: "实际余额、企业分配与转移限制决定零税率能否使用。",
+    updatedAt: "4小时前",
+  },
+  {
+    id: "russia",
+    code: "RU",
+    name: "俄罗斯",
+    englishName: "Russia",
+    lat: 61,
+    lng: 96,
+    region: "欧亚",
+    completeness: 49,
+    updateCount: 9,
+    status: "趋势研判",
+    headline: "税率之外，利用费与贸易限制仍是方案核心变量",
+    currentPolicy: "当前规则需要按进口主体、动力类型和车辆参数拆分。",
+    futurePolicy: "产业保护和本地化导向可能继续影响进口成本。",
+    risk: "政策调整频率高，计算结果必须绑定日期和来源版本。",
+    updatedAt: "20分钟前",
+  },
+  {
+    id: "mexico",
+    code: "MX",
+    name: "墨西哥",
+    englishName: "Mexico",
+    lat: 23.7,
+    lng: -102.5,
+    region: "北美",
+    completeness: 71,
+    updateCount: 5,
+    status: "已确认",
+    headline: "准确TIGIE/NICO与协定资格决定整车和KD分支",
+    currentPolicy: "一般进口税、VAT和新能源ISAN优惠已建立基础规则。",
+    futurePolicy: "贸易协定、产品清单和企业配额需要持续监控。",
+    risk: "零部件不能套用统一税率，必须通过CCU逐项映射。",
+    updatedAt: "6小时前",
+  },
+  {
+    id: "brazil",
+    code: "BR",
+    name: "巴西",
+    englishName: "Brazil",
+    lat: -10.3,
+    lng: -52.8,
+    region: "南美",
+    completeness: 63,
+    updateCount: 7,
+    status: "已确认",
+    headline: "PIS、COFINS、IPI与ICMS的税基顺序决定真实落地税负",
+    currentPolicy: "CBU、SKD及部分CKD关税场景已经进入模型。",
+    futurePolicy: "配额、可持续车型资格和产业激励需要按时间节点维护。",
+    risk: "州别ICMS和价内税倒算会让简单税率相加严重失真。",
+    updatedAt: "3小时前",
+  },
+];
+
+export const globalUpdates = [
+  {
+    id: "update-1",
+    level: "重点",
+    country: "巴西",
+    title: "进口税链条待补齐，ICMS州别参数仍是首要缺口",
+    time: "18分钟前",
+  },
+  {
+    id: "update-2",
+    level: "变化",
+    country: "俄罗斯",
+    title: "利用费及本地化导向列入高频监控",
+    time: "43分钟前",
+  },
+  {
+    id: "update-3",
+    level: "节点",
+    country: "泰国",
+    title: "EV3.5产量抵偿进入下一阶段测算窗口",
+    time: "2小时前",
+  },
+  {
+    id: "update-4",
+    level: "缺口",
+    country: "巴基斯坦",
+    title: "CBU普通关税与监管税仍需官方来源确认",
+    time: "5小时前",
+  },
+];

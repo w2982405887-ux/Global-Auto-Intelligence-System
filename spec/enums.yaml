@@ -1,0 +1,163 @@
+spec_version: "0.1.0"
+semantics:
+  effective_interval: "[effective_from, effective_to)"
+  open_ended_effective_to: null
+  timestamp_timezone: UTC
+  unknown_is_not_zero: true
+
+enums:
+  record_status:
+    values: [DRAFT, ACTIVE, SUSPENDED, SUPERSEDED, EXPIRED, REJECTED]
+    stable: true
+
+  verification_status:
+    values: [UNVERIFIED, CANDIDATE, VERIFIED, RULING_CONFIRMED]
+    stable: true
+
+  requirement_type:
+    values: [MANDATORY, INCENTIVE_ONLY, RULING_RECOMMENDED]
+    stable: true
+
+  import_mode:
+    values: [CBU, DKD, SKD, CKD, PARTS, LOCAL_PRODUCTION]
+    stable: true
+
+  powertrain:
+    values: [ICE_GASOLINE, ICE_DIESEL, HEV, PHEV, EREV, BEV, FCEV, OTHER]
+    stable: true
+
+  ccu_unit_level:
+    values: [VEHICLE_SYSTEM, ASSEMBLY, SUBASSEMBLY, CUSTOMS_CLASSIFICATION_UNIT]
+    stable: true
+
+  assembly_state:
+    values: [COMPLETE, INCOMPLETE, UNASSEMBLED, DISASSEMBLED, MIXED, UNKNOWN]
+    stable: true
+
+  origin_regime:
+    values: [MFN, FTA, PREFERENTIAL_PROGRAM, ENTERPRISE_EXEMPTION, UNKNOWN]
+    stable: true
+
+  rate_type:
+    values: [AD_VALOREM, SPECIFIC, COMPOUND, FORMULA, ZERO, NOT_APPLICABLE, UNKNOWN]
+    stable: true
+
+  rule_domain:
+    values:
+      - CUSTOMS_CLASSIFICATION
+      - IMPORT_DUTY
+      - SALES_TAX
+      - EXCISE
+      - VAT_GST
+      - FTA
+      - APPROVAL
+      - QUOTA
+      - LOCALIZATION
+      - INCENTIVE
+      - VALUATION
+      - OTHER
+    stable: true
+
+  source_type:
+    values:
+      - LAW
+      - REGULATION
+      - GAZETTE
+      - TARIFF_SCHEDULE
+      - OFFICIAL_GUIDE
+      - OFFICIAL_PORTAL
+      - BUDGET_DOCUMENT
+      - ADVANCE_RULING
+      - ENTERPRISE_APPROVAL
+      - TREATY
+      - OTHER
+    stable: true
+
+  official_status:
+    values: [OFFICIAL, OFFICIAL_ARCHIVE, SECONDARY, ENTERPRISE_INTERNAL, UNKNOWN]
+    stable: true
+
+  data_ownership:
+    values: [PUBLIC, ENTERPRISE, MIXED]
+    stable: true
+
+  input_data_type:
+    values: [TEXT, NUMBER, BOOLEAN, ENUM, DATE, JSON]
+    stable: true
+
+  input_value_status:
+    values: [EMPTY, PROVIDED, VERIFIED, REJECTED]
+    stable: true
+
+  calculation_status:
+    values: [QUEUED, RUNNING, COMPLETE, PARTIAL, BLOCKED, FAILED, SUPERSEDED]
+    stable: true
+
+  completeness:
+    values: [COMPLETE, PARTIAL, BLOCKED]
+    stable: true
+
+  missing_data_kind:
+    values:
+      - PUBLIC_RESEARCH
+      - ENTERPRISE_INPUT
+      - AUTHORITY_CONFIRMATION
+      - ADVANCE_RULING
+      - OFFICIAL_NOT_FOUND
+    stable: true
+
+  missing_data_status:
+    values: [OPEN, IN_RESEARCH, WAITING_ENTERPRISE, WAITING_AUTHORITY, RESOLVED, WAIVED]
+    stable: true
+
+  priority:
+    values: [P0, P1, P2, P3]
+    stable: true
+
+  decision_step_type:
+    values:
+      - INPUT_VALIDATION
+      - SCENARIO_SELECTION
+      - CLASSIFICATION
+      - RULE_SELECTION
+      - ELIGIBILITY
+      - CALCULATION
+      - RISK_ASSESSMENT
+      - OUTPUT
+    stable: true
+
+  risk_level:
+    values: [NONE, LOW, MEDIUM, HIGH, BLOCKING]
+    stable: true
+
+  risk_tag_type:
+    values: [GRI_2A, HEADING_8708_EXCLUSION, AP_REGULATORY]
+    stable: true
+
+  review_decision:
+    values: [PENDING, APPROVED, REJECTED, NEEDS_MORE_EVIDENCE]
+    stable: true
+
+  expression_operator:
+    values:
+      - EQ
+      - NE
+      - GT
+      - GTE
+      - LT
+      - LTE
+      - IN
+      - NOT_IN
+      - IS_NULL
+      - IS_NOT_NULL
+      - ADD
+      - SUBTRACT
+      - MULTIPLY
+      - DIVIDE
+      - SUM
+      - MIN
+      - MAX
+      - COALESCE
+      - ROUND
+      - NEGATE
+    stable: true

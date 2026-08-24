@@ -1,0 +1,110 @@
+{
+  "template_code": "TPL-MY-60-CCU-BOM-COMPARISON-V1",
+  "included_ccu_count": 0,
+  "blocker_count": 17,
+  "calculation_ready": false,
+  "blockers": [
+    {
+      "priority": "P0",
+      "field_path": "scenario.scenario_name",
+      "description": "Scenario name is required for audit identification.",
+      "owner": "ENTERPRISE_PROJECT_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "scenario.vehicle_model",
+      "description": "Vehicle model is required.",
+      "owner": "ENTERPRISE_PROJECT_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "scenario.import_date",
+      "description": "Import date is required for version-effective tariff selection.",
+      "owner": "ENTERPRISE_CUSTOMS_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "items",
+      "description": "At least one CCU must be explicitly included in the shipment.",
+      "owner": "ENTERPRISE_BOM_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.ACFTA.proof_valid",
+      "description": "ACFTA proof_valid must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.ACFTA.origin_rule_compliance_confirmed",
+      "description": "ACFTA origin_rule_compliance_confirmed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.ACFTA.nomenclature_correlation_confirmed",
+      "description": "ACFTA nomenclature_correlation_confirmed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.ACFTA.enterprise_reviewed",
+      "description": "ACFTA enterprise_reviewed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.ACFTA.evidence_reference",
+      "description": "ACFTA eligibility evidence reference is required.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.RCEP.proof_valid",
+      "description": "RCEP proof_valid must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.RCEP.origin_rule_compliance_confirmed",
+      "description": "RCEP origin_rule_compliance_confirmed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.RCEP.nomenclature_correlation_confirmed",
+      "description": "RCEP nomenclature_correlation_confirmed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.RCEP.enterprise_reviewed",
+      "description": "RCEP enterprise_reviewed must be explicitly confirmed.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "origin_eligibility.RCEP.evidence_reference",
+      "description": "RCEP eligibility evidence reference is required.",
+      "owner": "ENTERPRISE_FTA_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "profit.sales_revenue",
+      "description": "sales_revenue is required for profit comparison.",
+      "owner": "ENTERPRISE_FINANCE_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "profit.non_import_costs",
+      "description": "non_import_costs is required for profit comparison.",
+      "owner": "ENTERPRISE_FINANCE_OWNER"
+    },
+    {
+      "priority": "P0",
+      "field_path": "profit.recoverable_sst_fraction",
+      "description": "recoverable_sst_fraction is required for profit comparison.",
+      "owner": "ENTERPRISE_FINANCE_OWNER"
+    }
+  ]
+}

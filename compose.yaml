@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: gais-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-global_auto}
+      POSTGRES_USER: ${POSTGRES_USER:-gais}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.postgres.example to .env and set POSTGRES_PASSWORD}
+      TZ: Asia/Shanghai
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - gais_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-gais} -d ${POSTGRES_DB:-global_auto}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  gais_postgres_data:
+    name: gais_postgres_data

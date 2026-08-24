@@ -1,0 +1,49 @@
+version: 0.1.0
+selection_date: 2026-07-29
+tariff_version: PDK 2025
+status_rule:
+  VERIFIED: Generic CCU boundary plus stated condition identifies the national line.
+  CANDIDATE: National line and rates are verified, but enterprise facts or a hidden parent indentation remain required.
+  UNVERIFIED: No defensible national-line selection is made in round one.
+
+selections:
+  - {seq: 21, ccu: CCU-PASSENGER-CAR-TYRE, status: VERIFIED, codes: [4011100000]}
+  - {seq: 22, ccu: CCU-SPARK-IGNITION-ENGINE, status: CANDIDATE, codes: [8407347100, 8407347200, 8407347300, 8407349400, 8407349500, 8407349900], needs: [engine.displacement_cc, vehicle.intended_heading, pdk.parent_indentation]}
+  - {seq: 23, ccu: CCU-DIESEL-VEHICLE-ENGINE, status: CANDIDATE, codes: [8408202100, 8408202200, 8408202300, 8408209400, 8408209500, 8408209600], needs: [engine.displacement_cc, vehicle.intended_heading, pdk.parent_indentation]}
+  - {seq: 24, ccu: CCU-ENGINE-BLOCK-OR-HEAD, status: UNVERIFIED, codes: [], needs: [engine.ignition_type, engine.parent_engine_heading, part.block_or_head, vehicle.intended_heading, pdk.parent_indentation]}
+  - {seq: 25, ccu: CCU-ENGINE-FUEL-PUMP, status: VERIFIED, codes: [8413303000], needs: [part.pump_function, vehicle.intended_heading]}
+  - {seq: 26, ccu: CCU-ENGINE-OIL-FILTER, status: CANDIDATE, codes: [8421231100, 8421232100, 8421239100], needs: [engine.ignition_type, vehicle.intended_heading, pdk.parent_indentation]}
+  - {seq: 27, ccu: CCU-ENGINE-INTAKE-AIR-FILTER, status: VERIFIED, codes: [8421312000]}
+  - {seq: 28, ccu: CCU-CATALYTIC-CONVERTER, status: VERIFIED, codes: [8421320000]}
+  - {seq: 29, ccu: CCU-EXHAUST-SILENCER-PIPE, status: CANDIDATE, codes: [8708922000, 8708925100, 8708926100], needs: [vehicle.intended_heading, part.presentation_scope, pdk.parent_indentation]}
+  - {seq: 30, ccu: CCU-VEHICLE-FUEL-TANK, status: CANDIDATE, codes: [8708991100, 8708992100, 8708999100], needs: [vehicle.intended_heading, part.assembled_state, pdk.parent_indentation]}
+  - {seq: 31, ccu: CCU-ENGINE-FUEL-INJECTOR, status: UNVERIFIED, codes: [], needs: [engine.ignition_type, part.injector_type, engine.parent_engine_heading, authority.classification_confirmation]}
+  - {seq: 32, ccu: CCU-SPARK-PLUG, status: VERIFIED, codes: [8511102000]}
+  - {seq: 33, ccu: CCU-IGNITION-COIL-DISTRIBUTOR, status: CANDIDATE, codes: [8511304100, 8511304900, 8511309100, 8511309900], needs: [part.coil_or_distributor, part.assembled_state, pdk.parent_indentation]}
+  - {seq: 34, ccu: CCU-STARTER-MOTOR, status: CANDIDATE, codes: [8511402100, 8511403200, 8511409100], needs: [vehicle.intended_heading, part.motor_technology, pdk.parent_indentation]}
+  - {seq: 35, ccu: CCU-VEHICLE-ALTERNATOR, status: CANDIDATE, codes: [8511502100, 8511503200, 8511509100], needs: [vehicle.intended_heading, part.generator_type, pdk.parent_indentation]}
+  - {seq: 36, ccu: CCU-VEHICLE-CONTROL-ECU, status: CANDIDATE, codes: [8537109900, 9032899000], needs: [part.primary_function, part.controlled_system, part.operating_voltage_v]}
+  - {seq: 37, ccu: CCU-INSTRUMENT-CLUSTER, status: CANDIDATE, codes: [9029201000, 9029202000, 9029209000, 8531200000], needs: [part.display_type, part.speedometer_function, part.tachometer_function, part.primary_function]}
+  - {seq: 38, ccu: CCU-VEHICLE-INFOTAINMENT-HEAD-UNIT, status: CANDIDATE, codes: [8527211000, 8527219000], needs: [part.radio_receiver, part.digital_radio_data_decode, part.integrated_navigation, part.integrated_display]}
+  - {seq: 39, ccu: CCU-VEHICLE-LOUDSPEAKER, status: VERIFIED, codes: [8518299000]}
+  - {seq: 40, ccu: CCU-REAR-VIEW-MIRROR, status: VERIFIED, codes: [7009100000]}
+  - {seq: 41, ccu: CCU-WINDSCREEN-WIPER, status: VERIFIED, codes: [8512400000], needs: [part.primary_function]}
+  - {seq: 42, ccu: CCU-VEHICLE-HORN, status: CANDIDATE, codes: [8512301000, 8512302000], needs: [part.assembled_state, part.horn_or_other_signal]}
+  - {seq: 43, ccu: CCU-VEHICLE-HVAC-UNIT, status: CANDIDATE, codes: [8415201000, 8415209000], needs: [part.cooling_capacity_kw]}
+  - {seq: 44, ccu: CCU-VEHICLE-COOLANT-PUMP, status: CANDIDATE, codes: [8413304000, 8413811300], needs: [part.engine_mounted, part.electrically_operated, part.flow_rate_m3h, part.primary_function]}
+  - {seq: 45, ccu: CCU-BRAKE-FRICTION-PAD-LINING, status: VERIFIED, codes: [6813810000]}
+  - {seq: 46, ccu: CCU-BRAKE-MASTER-CYLINDER, status: CANDIDATE, codes: [8708302900, 8708309000], needs: [vehicle.intended_heading, part.master_cylinder_confirmed, pdk.parent_indentation]}
+  - {seq: 47, ccu: CCU-BRAKE-HOSE-ASSEMBLY, status: VERIFIED, codes: [4009329000], needs: [part.reinforcement_material, part.with_fittings]}
+  - {seq: 48, ccu: CCU-SUSPENSION-COIL-SPRING, status: VERIFIED, codes: [7320201100]}
+  - {seq: 49, ccu: CCU-SUSPENSION-LEAF-SPRING, status: VERIFIED, codes: [7320101100], needs: [vehicle.intended_heading]}
+  - {seq: 50, ccu: CCU-SUSPENSION-CONTROL-ARM, status: CANDIDATE, codes: [8708801600, 8708809200], needs: [vehicle.intended_heading, part.presentation_scope, pdk.parent_indentation]}
+  - {seq: 51, ccu: CCU-STABILIZER-BAR, status: CANDIDATE, codes: [8708801600, 8708809200], needs: [vehicle.intended_heading, part.presentation_scope, pdk.parent_indentation]}
+  - {seq: 52, ccu: CCU-VEHICLE-DOOR-ASSEMBLY, status: CANDIDATE, codes: [8708291600, 8708299500, 8708299800], needs: [vehicle.intended_heading, part.complete_door, pdk.parent_indentation]}
+  - {seq: 53, ccu: CCU-VEHICLE-HOOD-BONNET, status: CANDIDATE, codes: [8708291600, 8708299500, 8708299800], needs: [vehicle.intended_heading, part.hood_panel_or_rod, pdk.parent_indentation]}
+  - {seq: 54, ccu: CCU-VEHICLE-FENDER-PANEL, status: CANDIDATE, codes: [8708299300, 8708299600], needs: [vehicle.intended_heading, part.fender_or_mudguard, pdk.parent_indentation]}
+  - {seq: 55, ccu: CCU-INSTRUMENT-PANEL-DASHBOARD, status: CANDIDATE, codes: [8708299300, 8708299600], needs: [vehicle.intended_heading, part.structural_or_trim, part.integrated_equipment, pdk.parent_indentation]}
+  - {seq: 56, ccu: CCU-POWER-WINDOW-REGULATOR-MOTOR, status: CANDIDATE, codes: [8501316000, 8708291600, 8708299500, 8708299800], needs: [part.motor_only, part.regulator_included, part.rated_output_w, vehicle.intended_heading]}
+  - {seq: 57, ccu: CCU-VEHICLE-GEARBOX-TRANSMISSION, status: CANDIDATE, codes: [8708401100, 8708402600, 8708409200], needs: [vehicle.intended_heading, part.transmission_type, pdk.parent_indentation]}
+  - {seq: 58, ccu: CCU-VEHICLE-CLUTCH, status: VERIFIED, codes: [8708936000], needs: [vehicle.intended_heading]}
+  - {seq: 59, ccu: CCU-PROPELLER-DRIVE-SHAFT, status: CANDIDATE, codes: [8708996200], needs: [vehicle.intended_heading, part.drive_shaft_confirmed, pdk.parent_indentation]}
+  - {seq: 60, ccu: CCU-STEERING-WHEEL, status: CANDIDATE, codes: [8708949500], needs: [vehicle.intended_heading, part.steering_wheel_or_other_part, pdk.parent_indentation]}

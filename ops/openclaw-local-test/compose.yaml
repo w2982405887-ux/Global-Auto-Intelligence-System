@@ -1,0 +1,67 @@
+name: gai-openclaw-local-test
+
+services:
+  gateway:
+    # Pin the digest after the local smoke test so the same image is used on a server.
+    image: openclaw/openclaw@sha256:2f5ce8848a1a69b3c460622e566cb9395da9fd18d7ef7b038cd8e2c4f195decf
+    container_name: gai-openclaw-local-test
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      HOME: /home/node
+      OPENCLAW_TZ: Asia/Shanghai
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:?Set OPENCLAW_GATEWAY_TOKEN in .env}
+      OPENCLAW_WEB_SEARCH_PROVIDER: ${OPENCLAW_WEB_SEARCH_PROVIDER:-brave}
+      OPENCLAW_MODEL_PROVIDER: ${OPENCLAW_MODEL_PROVIDER:-openai}
+      OPENCLAW_DEEPSEEK_MODEL: ${OPENCLAW_DEEPSEEK_MODEL:-deepseek-v4-pro}
+      BRAVE_API_KEY: ${BRAVE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    command:
+      - sh
+      - -lc
+      - |
+        set -eu
+        if [ "$${OPENCLAW_MODEL_PROVIDER}" = "deepseek" ] && [ -n "$${DEEPSEEK_API_KEY}" ]; then
+          # The official provider is a state-volume plugin.  The container
+          # root is read-only, so keep npm's transient cache on the tmpfs and
+          # leave the installed plugin in /home/node/.openclaw for migration.
+          mkdir -p /tmp/npm
+          if ! find /home/node/.openclaw/npm/projects -path '*/node_modules/@openclaw/deepseek-provider' -type d -print -quit 2>/dev/null | grep -q .; then
+            npm_config_cache=/tmp/npm node openclaw.mjs plugins install @openclaw/deepseek-provider
+          fi
+          node openclaw.mjs config set agents.defaults.model.primary '"deepseek/$${OPENCLAW_DEEPSEEK_MODEL}"' --strict-json
+        fi
+        node openclaw.mjs config set gateway.http.endpoints.chatCompletions.enabled true --strict-json
+        node openclaw.mjs config set gateway.http.endpoints.chatCompletions.images '{"allowUrl":false,"maxBytes":20971520,"allowedMimes":["image/jpeg","image/png","image/gif","image/webp","image/heic","image/heif"]}' --strict-json
+        node openclaw.mjs config set tools.web.search.enabled true --strict-json
+        node openclaw.mjs config set tools.deny '["exec","shell","write","apply_patch","fs_write","fs_delete","gateway","nodes","sessions_spawn","cron"]' --strict-json
+        exec node openclaw.mjs gateway run --dev --allow-unconfigured --auth token --token "$${OPENCLAW_GATEWAY_TOKEN}" --bind lan --port 18789
+    ports:
+      - "127.0.0.1:18789:18789"
+    volumes:
+      - ./state:/home/node/.openclaw
+      - ./workspace:/home/node/workspace
+    tmpfs:
+      - /tmp
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          node openclaw.mjs gateway health
+          --url ws://127.0.0.1:18789
+          --token "$${OPENCLAW_GATEWAY_TOKEN}"
+      interval: 15s
+      # The CLI health probe starts a Node process inside the container. On
+      # Windows Docker Desktop it can take >10s even while the gateway is
+      # already serving HTTP/WebSocket traffic, so keep the probe from
+      # reporting a false unhealthy state.
+      timeout: 30s
+      retries: 5
+      start_period: 20s

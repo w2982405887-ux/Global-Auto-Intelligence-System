@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-07-29T02:42:05.813263+00:00",
+  "active_ccu_count": 60,
+  "mapping_option_count": 346,
+  "regime_coverage": {
+    "MFN": 58,
+    "ACFTA": 58,
+    "RCEP": 57
+  },
+  "ccus_with_all_three_regimes": 57,
+  "public_data_blockers": [
+    {
+      "ccu_code": "CCU-CATALYTIC-CONVERTER",
+      "field_path": "selected_mapping_codes",
+      "missing_regimes": [
+        "RCEP"
+      ],
+      "priority": "P0",
+      "action": "Complete official tariff mapping; do not guess a rate."
+    },
+    {
+      "ccu_code": "CCU-ENGINE-BLOCK-OR-HEAD",
+      "field_path": "selected_mapping_codes",
+      "missing_regimes": [
+        "MFN",
+        "ACFTA",
+        "RCEP"
+      ],
+      "priority": "P0",
+      "action": "Complete official tariff mapping; do not guess a rate."
+    },
+    {
+      "ccu_code": "CCU-ENGINE-FUEL-INJECTOR",
+      "field_path": "selected_mapping_codes",
+      "missing_regimes": [
+        "MFN",
+        "ACFTA",
+        "RCEP"
+      ],
+      "priority": "P0",
+      "action": "Complete official tariff mapping; do not guess a rate."
+    }
+  ],
+  "enterprise_values_prefilled": 0,
+  "calculation_ready": false,
+  "calculation_block_reason": "This is a use-time input template. No enterprise value, mapping selection, origin qualification or GRI 2(a) conclusion is prefilled."
+}

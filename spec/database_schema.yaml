@@ -1,0 +1,520 @@
+schema_spec_version: "0.1.0"
+project: global_automotive_kd_intelligence_system
+database: postgresql
+
+conventions:
+  identifiers: snake_case
+  internal_primary_key: uuid
+  business_code: text_unique
+  timestamps: timestamptz_utc
+  effective_interval: "[effective_from, effective_to)"
+  money:
+    amount_type: numeric(20,6)
+    currency: iso_4217_char3
+  rates:
+    storage: decimal_fraction
+    example: "0.10 means 10 percent"
+  json_contract:
+    condition_expression: spec/calculation_dsl.schema.json#/$defs/condition
+    calculation_expression: spec/calculation_dsl.schema.json#/$defs/numeric_expression
+  deletion:
+    policy: no_hard_delete_for_referenced_business_records
+  versioning:
+    policy: insert_new_version_and_close_prior_effective_interval
+
+schemas:
+  ref:
+    purpose: stable reference data
+    tables:
+      country:
+        grain: one ISO country
+        columns:
+          country_id: {type: uuid, primary_key: true}
+          iso2: {type: char(2), required: true, unique: true}
+          iso3: {type: char(3), required: true, unique: true}
+          country_name_en: {type: text, required: true}
+          country_name_cn: {type: text}
+          currency_code: {type: char(3)}
+          timezone_name: {type: text}
+          record_status: {type: enum.record_status, required: true}
+      authority:
+        grain: one competent authority
+        columns:
+          authority_id: {type: uuid, primary_key: true}
+          authority_code: {type: text, required: true, unique: true}
+          country_id: {type: uuid, foreign_key: ref.country.country_id}
+          authority_name: {type: text, required: true}
+          official_url: {type: text}
+          record_status: {type: enum.record_status, required: true}
+      trade_agreement:
+        grain: one versioned trade agreement or preference program
+        columns:
+          trade_agreement_id: {type: uuid, primary_key: true}
+          agreement_code: {type: text, required: true}
+          agreement_name: {type: text, required: true}
+          version: {type: integer, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          record_status: {type: enum.record_status, required: true}
+        unique_keys:
+          - [agreement_code, version]
+
+  evidence:
+    purpose: immutable source registry and clause-level evidence
+    tables:
+      source_document:
+        grain: one acquired version of one source document
+        columns:
+          source_document_id: {type: uuid, primary_key: true}
+          source_code: {type: text, required: true, unique: true}
+          authority_id: {type: uuid, foreign_key: ref.authority.authority_id}
+          document_title: {type: text, required: true}
+          document_number: {type: text}
+          source_type: {type: enum.source_type, required: true}
+          official_status: {type: enum.official_status, required: true}
+          canonical_url: {type: text}
+          publication_date: {type: date}
+          effective_from: {type: date}
+          effective_to: {type: date}
+          accessed_at: {type: timestamptz, required: true}
+          language_code: {type: varchar(12)}
+          content_sha256: {type: char(64)}
+          archived_object_key: {type: text}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+      source_clause:
+        grain: one independently citable clause, page, table row, or tariff note
+        columns:
+          source_clause_id: {type: uuid, primary_key: true}
+          clause_code: {type: text, required: true, unique: true}
+          source_document_id: {type: uuid, required: true, foreign_key: evidence.source_document.source_document_id}
+          locator_type: {type: text, required: true}
+          locator_value: {type: text, required: true}
+          original_text: {type: text}
+          translated_text_cn: {type: text}
+          evidence_summary: {type: text}
+          extraction_method: {type: text}
+          extracted_at: {type: timestamptz}
+          verification_status: {type: enum.verification_status, required: true}
+
+  rules:
+    purpose: executable, versioned country rules and requirements
+    tables:
+      country_rule_card:
+        grain: one independently applicable rule version
+        columns:
+          rule_card_id: {type: uuid, primary_key: true}
+          rule_code: {type: text, required: true}
+          country_id: {type: uuid, required: true, foreign_key: ref.country.country_id}
+          rule_domain: {type: enum.rule_domain, required: true}
+          rule_name_cn: {type: text, required: true}
+          rule_content: {type: text, required: true}
+          condition_expression: {type: jsonb, required: true}
+          formula_expression: {type: jsonb}
+          tariff_version: {type: text}
+          authority_id: {type: uuid, foreign_key: ref.authority.authority_id}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          source_clause_id: {type: uuid, required: true, foreign_key: evidence.source_clause.source_clause_id}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+          verified_at: {type: timestamptz}
+          verified_by: {type: text}
+        unique_keys:
+          - [rule_code, version]
+      approval_matrix:
+        grain: one independently testable requirement version
+        columns:
+          requirement_id: {type: uuid, primary_key: true}
+          requirement_code: {type: text, required: true}
+          country_id: {type: uuid, required: true, foreign_key: ref.country.country_id}
+          requirement_type: {type: enum.requirement_type, required: true}
+          applicable_object: {type: text, required: true}
+          import_mode: {type: enum.import_mode}
+          powertrain: {type: enum.powertrain}
+          trigger_condition: {type: jsonb, required: true}
+          required_document: {type: jsonb}
+          authority_id: {type: uuid, foreign_key: ref.authority.authority_id}
+          benefit_rule_id: {type: uuid, foreign_key: rules.country_rule_card.rule_card_id}
+          failure_consequence: {type: text}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          source_clause_id: {type: uuid, required: true, foreign_key: evidence.source_clause.source_clause_id}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [requirement_code, version]
+      tax_scenario_model:
+        grain: one executable scenario template version
+        columns:
+          scenario_model_id: {type: uuid, primary_key: true}
+          scenario_code: {type: text, required: true}
+          country_id: {type: uuid, required: true, foreign_key: ref.country.country_id}
+          scenario_name_cn: {type: text, required: true}
+          import_mode: {type: enum.import_mode, required: true}
+          origin_regime: {type: enum.origin_regime, required: true}
+          powertrain: {type: enum.powertrain}
+          classification_route: {type: text, required: true}
+          required_input_fields: {type: jsonb, required: true}
+          calculation_dsl: {type: jsonb, required: true}
+          fallback_scenario_id: {type: uuid, foreign_key: rules.tax_scenario_model.scenario_model_id}
+          output_scope: {type: jsonb, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [scenario_code, version]
+      scenario_rule_link:
+        grain: one ordered scenario-to-rule dependency
+        columns:
+          scenario_rule_link_id: {type: uuid, primary_key: true}
+          scenario_model_id: {type: uuid, required: true, foreign_key: rules.tax_scenario_model.scenario_model_id}
+          rule_card_id: {type: uuid, required: true, foreign_key: rules.country_rule_card.rule_card_id}
+          sequence_no: {type: integer, required: true}
+          mandatory: {type: boolean, required: true}
+      scenario_requirement_link:
+        grain: one scenario-to-approval dependency
+        columns:
+          scenario_requirement_link_id: {type: uuid, primary_key: true}
+          scenario_model_id: {type: uuid, required: true, foreign_key: rules.tax_scenario_model.scenario_model_id}
+          requirement_id: {type: uuid, required: true, foreign_key: rules.approval_matrix.requirement_id}
+          sequence_no: {type: integer, required: true}
+          blocking: {type: boolean, required: true}
+
+  customs:
+    purpose: CCU master, candidate HS6 and country tariff mappings
+    tables:
+      customs_classification_unit:
+        grain: one stable customs classification unit version
+        columns:
+          ccu_id: {type: uuid, primary_key: true}
+          ccu_code: {type: text, required: true}
+          ccu_name_cn: {type: text, required: true}
+          ccu_name_en: {type: text, required: true}
+          parent_ccu_id: {type: uuid, foreign_key: customs.customs_classification_unit.ccu_id}
+          vehicle_system: {type: text, required: true}
+          unit_level: {type: enum.ccu_unit_level, required: true}
+          function_description: {type: text, required: true}
+          material_spec: {type: text}
+          technical_qualifiers: {type: jsonb, required: true}
+          assembly_state: {type: enum.assembly_state, required: true}
+          included_items: {type: jsonb, required: true}
+          excluded_items: {type: jsonb, required: true}
+          required_input_fields: {type: jsonb, required: true}
+          gri_2a_risk: {type: enum.risk_level, required: true}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [ccu_code, version]
+      ccu_input_requirement:
+        grain: one versioned enterprise input definition for one CCU
+        columns:
+          input_requirement_id: {type: uuid, primary_key: true}
+          ccu_id: {type: uuid, required: true, foreign_key: customs.customs_classification_unit.ccu_id}
+          field_path: {type: text, required: true}
+          field_name_cn: {type: text, required: true}
+          field_name_en: {type: text}
+          required_at_use: {type: boolean, required: true}
+          value_type: {type: enum.input_data_type, required: true}
+          unit: {type: text}
+          suggested_value: {type: jsonb}
+          allowed_values: {type: jsonb, required: true}
+          data_owner: {type: text, required: true}
+          guidance_cn: {type: text}
+          classification_impact_cn: {type: text}
+          evidence_required: {type: boolean, required: true}
+          display_order: {type: integer, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [ccu_id, field_path, version]
+          - [ccu_id, display_order, version]
+      ccu_candidate_hs:
+        grain: one ranked HS6 candidate for one CCU version
+        columns:
+          candidate_id: {type: uuid, primary_key: true}
+          ccu_id: {type: uuid, required: true, foreign_key: customs.customs_classification_unit.ccu_id}
+          candidate_rank: {type: smallint, required: true, allowed: [1, 2, 3]}
+          hs_nomenclature_version: {type: text, required: true}
+          hs6_code: {type: char(6), required: true}
+          candidate_basis: {type: text, required: true}
+          exclusion_notes: {type: text}
+          source_clause_id: {type: uuid, foreign_key: evidence.source_clause.source_clause_id}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [ccu_id, candidate_rank, hs_nomenclature_version]
+      ccu_risk_tag:
+        grain: one of the three Phase 1 risk dimensions for one CCU
+        columns:
+          ccu_risk_tag_id: {type: uuid, primary_key: true}
+          ccu_id: {type: uuid, required: true, foreign_key: customs.customs_classification_unit.ccu_id}
+          risk_tag_type: {type: enum.risk_tag_type, required: true}
+          risk_level: {type: enum.risk_level, required: true}
+          trigger_condition: {type: jsonb, required: true}
+          risk_note: {type: text, required: true}
+          source_clause_id: {type: uuid, foreign_key: evidence.source_clause.source_clause_id}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [ccu_id, risk_tag_type]
+      tariff_mapping:
+        grain: one CCU candidate plus national tariff code plus origin regime and effective interval
+        columns:
+          mapping_id: {type: uuid, primary_key: true}
+          mapping_code: {type: text, required: true}
+          country_id: {type: uuid, required: true, foreign_key: ref.country.country_id}
+          candidate_id: {type: uuid, required: true, foreign_key: customs.ccu_candidate_hs.candidate_id}
+          tariff_version: {type: text, required: true}
+          national_tariff_code: {type: text, required: true}
+          tariff_description: {type: text, required: true}
+          origin_regime: {type: enum.origin_regime, required: true}
+          trade_agreement_id: {type: uuid, foreign_key: ref.trade_agreement.trade_agreement_id}
+          duty_rate: {type: numeric(12,8)}
+          rate_type: {type: enum.rate_type, required: true}
+          additional_measure: {type: jsonb, required: true}
+          eligibility_condition: {type: jsonb, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          source_clause_id: {type: uuid, required: true, foreign_key: evidence.source_clause.source_clause_id}
+          record_status: {type: enum.record_status, required: true}
+          verification_status: {type: enum.verification_status, required: true}
+        unique_keys:
+          - [mapping_code, version]
+
+  enterprise:
+    purpose: enterprise-owned inputs kept separate from customs master data
+    tables:
+      vehicle_model:
+        grain: one versioned enterprise vehicle configuration
+        columns:
+          vehicle_id: {type: uuid, primary_key: true}
+          model_code: {type: text, required: true}
+          vehicle_type: {type: text, required: true}
+          powertrain: {type: enum.powertrain, required: true}
+          technical_attributes: {type: jsonb, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+      enterprise_part:
+        grain: one versioned enterprise physical part number
+        columns:
+          enterprise_part_id: {type: uuid, primary_key: true}
+          enterprise_code: {type: text, required: true}
+          part_no: {type: text, required: true}
+          part_name_cn: {type: text}
+          part_name_en: {type: text}
+          attributes: {type: jsonb, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          version: {type: integer, required: true}
+          record_status: {type: enum.record_status, required: true}
+        unique_keys:
+          - [enterprise_code, part_no, version]
+      enterprise_part_ccu_link:
+        grain: one time-bound reviewed mapping from enterprise part to CCU
+        columns:
+          part_ccu_link_id: {type: uuid, primary_key: true}
+          enterprise_part_id: {type: uuid, required: true, foreign_key: enterprise.enterprise_part.enterprise_part_id}
+          ccu_id: {type: uuid, required: true, foreign_key: customs.customs_classification_unit.ccu_id}
+          mapping_basis: {type: text, required: true}
+          confidence: {type: numeric(5,4)}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          verification_status: {type: enum.verification_status, required: true}
+      part_ccu_input_value:
+        grain: one progressively completed value slot for one part-to-CCU link and CCU input requirement
+        columns:
+          part_ccu_input_value_id: {type: uuid, primary_key: true}
+          part_ccu_link_id: {type: uuid, required: true, foreign_key: enterprise.enterprise_part_ccu_link.part_ccu_link_id}
+          input_requirement_id: {type: uuid, required: true, foreign_key: customs.ccu_input_requirement.input_requirement_id}
+          value_payload: {type: jsonb}
+          value_status: {type: enum.input_value_status, required: true}
+          evidence_refs: {type: jsonb, required: true}
+          notes: {type: text}
+          provided_by: {type: text}
+          provided_at: {type: timestamptz}
+          verified_by: {type: text}
+          verified_at: {type: timestamptz}
+          created_at: {type: timestamptz, required: true}
+          updated_at: {type: timestamptz, required: true}
+        unique_keys:
+          - [part_ccu_link_id, input_requirement_id]
+      bom_version:
+        grain: one immutable BOM version header
+        columns:
+          bom_version_id: {type: uuid, primary_key: true}
+          vehicle_id: {type: uuid, required: true, foreign_key: enterprise.vehicle_model.vehicle_id}
+          bom_code: {type: text, required: true}
+          version: {type: integer, required: true}
+          effective_from: {type: date, required: true}
+          effective_to: {type: date}
+          record_status: {type: enum.record_status, required: true}
+      bom_line:
+        grain: one enterprise part line in one BOM version
+        columns:
+          bom_line_id: {type: uuid, primary_key: true}
+          bom_version_id: {type: uuid, required: true, foreign_key: enterprise.bom_version.bom_version_id}
+          enterprise_part_id: {type: uuid, required: true, foreign_key: enterprise.enterprise_part.enterprise_part_id}
+          quantity_per_vehicle: {type: numeric(20,6), required: true}
+          unit_value: {type: numeric(20,6)}
+          currency_code: {type: char(3)}
+          origin_country_id: {type: uuid, foreign_key: ref.country.country_id}
+          shipment_group: {type: text}
+          included_flag: {type: boolean, required: true}
+      scenario_input:
+        grain: one mutable scenario header before execution
+        columns:
+          scenario_input_id: {type: uuid, primary_key: true}
+          scenario_code: {type: text, required: true, unique: true}
+          country_id: {type: uuid, required: true, foreign_key: ref.country.country_id}
+          vehicle_id: {type: uuid, foreign_key: enterprise.vehicle_model.vehicle_id}
+          bom_version_id: {type: uuid, foreign_key: enterprise.bom_version.bom_version_id}
+          import_date: {type: date, required: true}
+          import_mode: {type: enum.import_mode, required: true}
+          origin_country_id: {type: uuid, foreign_key: ref.country.country_id}
+          input_payload: {type: jsonb, required: true}
+          record_status: {type: enum.record_status, required: true}
+      input_snapshot:
+        grain: one immutable hash-addressed scenario input snapshot
+        columns:
+          input_snapshot_id: {type: uuid, primary_key: true}
+          scenario_input_id: {type: uuid, required: true, foreign_key: enterprise.scenario_input.scenario_input_id}
+          payload: {type: jsonb, required: true}
+          payload_sha256: {type: char(64), required: true, unique: true}
+          created_at: {type: timestamptz, required: true}
+
+  calc:
+    purpose: deterministic calculation outputs
+    tables:
+      calculation_run:
+        grain: one engine execution against immutable snapshots
+        columns:
+          calculation_run_id: {type: uuid, primary_key: true}
+          run_code: {type: text, required: true, unique: true}
+          scenario_model_id: {type: uuid, required: true, foreign_key: rules.tax_scenario_model.scenario_model_id}
+          input_snapshot_id: {type: uuid, required: true, foreign_key: enterprise.input_snapshot.input_snapshot_id}
+          rule_snapshot_at: {type: timestamptz, required: true}
+          engine_version: {type: text, required: true}
+          run_status: {type: enum.calculation_status, required: true}
+          completeness: {type: enum.completeness, required: true}
+          currency_code: {type: char(3), required: true}
+          base_value: {type: numeric(20,6)}
+          gross_tax: {type: numeric(20,6)}
+          recoverable_tax: {type: numeric(20,6)}
+          net_tax: {type: numeric(20,6)}
+          effective_tax_rate: {type: numeric(12,8)}
+          started_at: {type: timestamptz, required: true}
+          completed_at: {type: timestamptz}
+          error_summary: {type: text}
+      calculation_line:
+        grain: one ordered tax or adjustment line in one run
+        columns:
+          calculation_line_id: {type: uuid, primary_key: true}
+          calculation_run_id: {type: uuid, required: true, foreign_key: calc.calculation_run.calculation_run_id}
+          sequence_no: {type: integer, required: true}
+          tax_code: {type: text, required: true}
+          base_expression: {type: jsonb, required: true}
+          base_amount: {type: numeric(20,6)}
+          rate_type: {type: enum.rate_type, required: true}
+          rate: {type: numeric(12,8)}
+          tax_expression: {type: jsonb, required: true}
+          gross_tax_amount: {type: numeric(20,6)}
+          recoverable_fraction: {type: numeric(12,8)}
+          net_tax_amount: {type: numeric(20,6)}
+          rule_card_id: {type: uuid, foreign_key: rules.country_rule_card.rule_card_id}
+          tariff_mapping_id: {type: uuid, foreign_key: customs.tariff_mapping.mapping_id}
+          line_status: {type: enum.calculation_status, required: true}
+          notes: {type: text}
+
+  audit:
+    purpose: auditable decisions, gaps and human review
+    tables:
+      decision_trace:
+        grain: one explicit auditable business decision step
+        columns:
+          decision_trace_id: {type: uuid, primary_key: true}
+          calculation_run_id: {type: uuid, required: true, foreign_key: calc.calculation_run.calculation_run_id}
+          sequence_no: {type: integer, required: true}
+          step_type: {type: enum.decision_step_type, required: true}
+          decision_question: {type: text, required: true}
+          input_record_refs: {type: jsonb, required: true}
+          rule_record_refs: {type: jsonb, required: true}
+          source_clause_refs: {type: jsonb, required: true}
+          explicit_rationale: {type: text, required: true}
+          result: {type: jsonb, required: true}
+          confidence: {type: numeric(5,4)}
+          human_review_required: {type: boolean, required: true}
+          created_at: {type: timestamptz, required: true}
+        forbidden_content:
+          - hidden_chain_of_thought
+          - model_private_reasoning
+      missing_data:
+        grain: one unresolved field or evidence gap for one run
+        columns:
+          missing_data_id: {type: uuid, primary_key: true}
+          calculation_run_id: {type: uuid, foreign_key: calc.calculation_run.calculation_run_id}
+          field_path: {type: text, required: true}
+          description: {type: text, required: true}
+          data_owner: {type: text}
+          data_kind: {type: enum.missing_data_kind, required: true}
+          data_ownership: {type: enum.data_ownership, required: true}
+          blocking_scope: {type: text, required: true}
+          priority: {type: enum.priority, required: true}
+          next_action: {type: text, required: true}
+          official_entry_url: {type: text}
+          status: {type: enum.missing_data_status, required: true}
+          resolved_at: {type: timestamptz}
+      review_record:
+        grain: one human review action on one business record
+        columns:
+          review_record_id: {type: uuid, primary_key: true}
+          entity_type: {type: text, required: true}
+          entity_id: {type: uuid, required: true}
+          decision: {type: enum.review_decision, required: true}
+          reviewer: {type: text, required: true}
+          review_notes: {type: text}
+          reviewed_at: {type: timestamptz, required: true}
+
+  ai:
+    purpose: prompt-safe minimum records exposed to LLM explanation
+    tables:
+      llm_view_item:
+        grain: one approved record projection for one calculation run
+        columns:
+          llm_view_item_id: {type: uuid, primary_key: true}
+          calculation_run_id: {type: uuid, required: true, foreign_key: calc.calculation_run.calculation_run_id}
+          sequence_no: {type: integer, required: true}
+          record_type: {type: text, required: true}
+          record_id: {type: uuid, required: true}
+          field_subset: {type: jsonb, required: true}
+          why_read: {type: text, required: true}
+          source_clause_refs: {type: jsonb, required: true}
+          data_quality: {type: enum.verification_status, required: true}
+          prompt_safe: {type: boolean, required: true}
+
+cross_table_invariants:
+  - code: INV-001
+    rule: enterprise parts never carry a final HS conclusion; classification goes through CCU links
+  - code: INV-002
+    rule: each CCU has at most three ranked HS6 candidates per nomenclature version
+  - code: INV-003
+    rule: each tariff mapping row represents exactly one origin regime
+  - code: INV-004
+    rule: active rules, mappings and requirements require clause-level evidence
+  - code: INV-005
+    rule: calculation runs reference immutable input and rule snapshots
+  - code: INV-006
+    rule: unknown or missing rates must never be coerced to zero
+  - code: INV-007
+    rule: LLM output cannot create calculation lines or final classification records
+  - code: INV-008
+    rule: CCU risk labels use exactly GRI_2A, HEADING_8708_EXCLUSION and AP_REGULATORY dimensions
