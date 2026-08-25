@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
+// The proxy target is a deployment/local-run setting, not a repository path.
+// Override it with VITE_DEV_API_PROXY_TARGET when the backend is on another
+// host or port; keep the loopback default for the local Docker/Postgres setup.
+const devApiProxyTarget =
+  process.env.VITE_DEV_API_PROXY_TARGET ?? "http://127.0.0.1:8000";
 
 export default defineConfig({
   server: {
@@ -11,12 +16,12 @@ export default defineConfig({
     // existing /api/v1 and health endpoints.
     proxy: {
       "/api/v1": {
-        target: "http://127.0.0.1:8000",
+        target: devApiProxyTarget,
         changeOrigin: true,
         secure: false,
       },
       "/health": {
-        target: "http://127.0.0.1:8000",
+        target: devApiProxyTarget,
         changeOrigin: true,
         secure: false,
       },

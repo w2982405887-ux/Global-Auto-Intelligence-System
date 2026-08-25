@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import re
 from pathlib import Path
 
@@ -10,15 +11,25 @@ import olefile
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUT = PROJECT_ROOT / "database/reference_exports/vietnam_fta_major_parts_rates_extracted_round1.csv"
 
+# Source Word attachments are operator-provided research inputs and are not
+# part of the repository.  Configure one portable root on each machine/server
+# instead of embedding a user's Downloads directory in the extractor.
+REFERENCE_DOCS_ROOT = Path(
+    os.environ.get(
+        "GAIS_VIETNAM_FTA_DOCS_ROOT",
+        str(PROJECT_ROOT / "database" / "reference_docs" / "vietnam_fta"),
+    )
+)
+
 SOURCES = [
-    ("ACFTA", "CN", Path(r"C:\Users\w2982\Downloads\中国-东盟")),
-    ("ATIGA", "ASEAN", Path(r"C:\Users\w2982\Downloads\东盟内部")),
-    ("RCEP", "ASEAN", Path(r"C:\Users\w2982\Downloads\RCEP")),
-    ("RCEP", "AU", Path(r"C:\Users\w2982\Downloads\RCEP")),
-    ("RCEP", "CN", Path(r"C:\Users\w2982\Downloads\RCEP")),
-    ("RCEP", "JP", Path(r"C:\Users\w2982\Downloads\RCEP")),
-    ("RCEP", "KR", Path(r"C:\Users\w2982\Downloads\RCEP")),
-    ("RCEP", "NZ", Path(r"C:\Users\w2982\Downloads\RCEP")),
+    ("ACFTA", "CN", REFERENCE_DOCS_ROOT / "china-asean"),
+    ("ATIGA", "ASEAN", REFERENCE_DOCS_ROOT / "asean"),
+    ("RCEP", "ASEAN", REFERENCE_DOCS_ROOT / "rcep"),
+    ("RCEP", "AU", REFERENCE_DOCS_ROOT / "rcep"),
+    ("RCEP", "CN", REFERENCE_DOCS_ROOT / "rcep"),
+    ("RCEP", "JP", REFERENCE_DOCS_ROOT / "rcep"),
+    ("RCEP", "KR", REFERENCE_DOCS_ROOT / "rcep"),
+    ("RCEP", "NZ", REFERENCE_DOCS_ROOT / "rcep"),
 ]
 
 # File blocks previously confirmed from official downloaded attachments.

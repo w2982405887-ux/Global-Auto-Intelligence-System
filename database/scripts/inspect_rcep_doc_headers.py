@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import re
+import os
 from pathlib import Path
 
 import olefile
 
 
-ROOT = Path(r"C:\Users\w2982\Downloads\RCEP")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(
+    os.environ.get(
+        "GAIS_RCEP_DOCS_DIR",
+        str(PROJECT_ROOT / "database" / "reference_docs" / "vietnam_fta" / "rcep"),
+    )
+)
 
 
 def read_text(path: Path) -> str:

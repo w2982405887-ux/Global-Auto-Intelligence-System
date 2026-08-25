@@ -4,8 +4,9 @@ import csv
 from pathlib import Path
 
 
-IN = Path("database/reference_exports/vietnam_acfta_atiga_8703_cbu_rates_ready_round1.csv")
-OUT = Path("database/seeds/0023_vietnam_cbu_acfta_atiga_8703_rates_round1.sql")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+IN = PROJECT_ROOT / "database" / "reference_exports" / "vietnam_acfta_atiga_8703_cbu_rates_ready_round1.csv"
+OUT = PROJECT_ROOT / "database" / "seeds" / "0023_vietnam_cbu_acfta_atiga_8703_rates_round1.sql"
 
 
 POWERTRAIN_BY_HS6 = {

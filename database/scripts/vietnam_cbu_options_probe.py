@@ -8,7 +8,7 @@ for line in (root / ".env").read_text(encoding="utf-8").splitlines():
         k, v = line.split("=", 1)
         env[k.strip()] = v.strip()
 engine = create_engine(
-    f"postgresql+psycopg://{env['POSTGRES_USER']}:{env['POSTGRES_PASSWORD']}@127.0.0.1:{env.get('POSTGRES_PORT','5432')}/{env['POSTGRES_DB']}"
+    f"postgresql+psycopg://{env['POSTGRES_USER']}:{env['POSTGRES_PASSWORD']}@{env.get('POSTGRES_HOST', '127.0.0.1')}:{env.get('POSTGRES_PORT','5432')}/{env['POSTGRES_DB']}"
 )
 with engine.begin() as conn:
     rows = conn.execute(text("""

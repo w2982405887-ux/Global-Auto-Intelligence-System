@@ -30,7 +30,8 @@ Get-FileHash .\database\exports\full\global_auto_full_2026-08-25.dump -Algorithm
 ## 恢复完整备份（只恢复到新测试库）
 
 ```powershell
-cd "C:\Users\w2982\Documents\Codex\2026-07-27\kd-hs6\Global-Auto-Intelligence-System"
+$repo = (git rev-parse --show-toplevel)
+Set-Location $repo
 docker compose up -d postgres
 docker cp .\database\exports\full\global_auto_full_2026-08-25.dump gais-postgres:/tmp/restore.dump
 docker compose exec -T postgres sh -lc 'createdb -U "$POSTGRES_USER" global_auto_restore_test'

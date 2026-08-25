@@ -17,6 +17,9 @@ backups/
 database/exports/full/
 *.dump
 *.backup
+# Operator-provided official attachments stay outside version control.
+database/reference_docs/*
+!database/reference_docs/README.md
 ops/openclaw-local-test/.env
 ops/openclaw-local-test/state/*
 ops/openclaw-local-test/workspace/*

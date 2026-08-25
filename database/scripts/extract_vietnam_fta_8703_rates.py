@@ -1,27 +1,38 @@
 from __future__ import annotations
 
 import csv
+import os
 import re
 from pathlib import Path
 
 import olefile
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+REFERENCE_DOCS_ROOT = Path(
+    os.environ.get(
+        "GAIS_VIETNAM_FTA_DOCS_ROOT",
+        str(PROJECT_ROOT / "database" / "reference_docs" / "vietnam_fta"),
+    )
+)
+ACFTA_DOCS = REFERENCE_DOCS_ROOT / "china-asean"
+ATIGA_DOCS = REFERENCE_DOCS_ROOT / "asean"
+RCEP_DOCS = REFERENCE_DOCS_ROOT / "rcep"
 
 SOURCES = [
-    ("ACFTA", Path(r"C:\Users\w2982\Downloads\中国-东盟\2023_545 + 546_118-2022-NĐ-CP.doc")),
-    ("ATIGA", Path(r"C:\Users\w2982\Downloads\东盟内部\2023_475 + 476_126-2022-NĐ-CP.doc")),
-    ("ATIGA", Path(r"C:\Users\w2982\Downloads\东盟内部\2023_477 + 478_126-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_129 + 130_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_147 + 148_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_163 + 164_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_179 + 180_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_181 + 182_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_197 + 198_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_213 + 214_129-2022-NĐ-CP.doc")),
-    ("RCEP", Path(r"C:\Users\w2982\Downloads\RCEP\2023_215 + 216_129-2022-NĐ-CP.doc")),
+    ("ACFTA", ACFTA_DOCS / "2023_545 + 546_118-2022-NĐ-CP.doc"),
+    ("ATIGA", ATIGA_DOCS / "2023_475 + 476_126-2022-NĐ-CP.doc"),
+    ("ATIGA", ATIGA_DOCS / "2023_477 + 478_126-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_129 + 130_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_147 + 148_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_163 + 164_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_179 + 180_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_181 + 182_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_197 + 198_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_213 + 214_129-2022-NĐ-CP.doc"),
+    ("RCEP", RCEP_DOCS / "2023_215 + 216_129-2022-NĐ-CP.doc"),
 ]
 
-OUT = Path("database/reference_exports/vietnam_fta_8703_rates_extracted_round1.csv")
+OUT = PROJECT_ROOT / "database/reference_exports/vietnam_fta_8703_rates_extracted_round1.csv"
 CODE_RE = re.compile(r"^8703\.\d{2}(?:\.\d{2})?$")
 RATE_RE = re.compile(r"^(?:\d{1,3}|\*)$")
 COUNTRY_RE = re.compile(r"^[A-Z]{2}(?:,\s*[A-Z]{2})*$")

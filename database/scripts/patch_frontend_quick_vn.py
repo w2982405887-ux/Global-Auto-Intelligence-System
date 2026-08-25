@@ -1,6 +1,7 @@
 from pathlib import Path
 
-api = Path("frontend/app/lib/api.ts")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+api = PROJECT_ROOT / "frontend" / "app" / "lib" / "api.ts"
 s = api.read_text(encoding="utf-8")
 s = s.replace(
     "  incentive: QuickEstimateScenario;\n  missing_items: string[];",
@@ -29,7 +30,7 @@ s = s.replace(
 )
 api.write_text(s, encoding="utf-8")
 
-page = Path("frontend/app/decision/new/page.tsx")
+page = PROJECT_ROOT / "frontend" / "app" / "decision" / "new" / "page.tsx"
 t = page.read_text(encoding="utf-8")
 t = t.replace('const powertrains = ["ICE_GASOLINE", "HEV", "PHEV", "EREV", "BEV"] as const;', 'const powertrains = ["ICE_GASOLINE", "ICE_DIESEL", "HEV", "PHEV", "EREV", "BEV", "FCEV"] as const;')
 t = t.replace('  const [form, setForm] = useState({\n    country_iso2: "MY",', '  const [form, setForm] = useState({\n    country_iso2: "VN",')

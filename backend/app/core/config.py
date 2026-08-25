@@ -5,19 +5,28 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+# Resolve repository-owned defaults from this file rather than from the
+# process working directory.  This keeps `uvicorn` and the launcher script
+# interchangeable when the checkout lives anywhere on a developer machine or
+# on a server.
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="GAIS_",
-        env_file=".env",
+        env_file=PROJECT_ROOT / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
     environment: str = "local"
     database_url: str = Field(
+        # Development-only fallback.  Deployments should always inject the
+        # complete GAIS_DATABASE_URL through the environment/secret store.
         default="postgresql+psycopg://postgres:postgres@localhost:5432/global_auto"
     )
-    calculation_dsl_path: Path = Path("../spec/calculation_dsl.schema.json")
+    calculation_dsl_path: Path = PROJECT_ROOT / "spec" / "calculation_dsl.schema.json"
     log_level: str = "INFO"
     cors_origins: str = (
         "http://127.0.0.1:3000,http://localhost:3000,"
@@ -38,7 +47,7 @@ class Settings(BaseSettings):
     openclaw_timeout_seconds: float = 300.0
     openclaw_max_tool_rounds: int = 6
     openclaw_fallback_to_legacy: bool = True
-    assistant_upload_dir: Path = Path("storage/assistant_uploads")
+    assistant_upload_dir: Path = PROJECT_ROOT / "storage" / "assistant_uploads"
     assistant_upload_max_bytes: int = 20_000_000
     assistant_upload_max_text_chars: int = 120_000
     # Optional deterministic search bridge.  OpenClaw itself can also use its

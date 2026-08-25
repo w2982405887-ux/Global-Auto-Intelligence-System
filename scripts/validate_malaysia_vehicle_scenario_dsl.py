@@ -18,7 +18,7 @@ def database_url() -> str:
         raise RuntimeError("POSTGRES_PASSWORD is missing")
     return (
         f"postgresql+psycopg://{quote_plus(str(values.get('POSTGRES_USER', 'gais')))}:"
-        f"{quote_plus(str(password))}@127.0.0.1:"
+        f"{quote_plus(str(password))}@{values.get('POSTGRES_HOST', '127.0.0.1')}:"
         f"{values.get('POSTGRES_PORT', '5432')}/{values.get('POSTGRES_DB', 'global_auto')}"
     )
 

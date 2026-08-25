@@ -34,11 +34,12 @@ def main() -> int:
         db = env.get("POSTGRES_DB")
         user = env.get("POSTGRES_USER")
         password = env.get("POSTGRES_PASSWORD")
+        host = env.get("POSTGRES_HOST", "127.0.0.1")
         port = env.get("POSTGRES_PORT", "5432")
         if not all([db, user, password, port]):
             print("GAIS_DATABASE_URL or POSTGRES_* values in .env are required", file=sys.stderr)
             return 2
-        db_url = f"postgresql+psycopg://{user}:{password}@127.0.0.1:{port}/{db}"
+        db_url = f"postgresql+psycopg://{user}:{password}@{host}:{port}/{db}"
 
     seed_path = Path(sys.argv[1])
     if not seed_path.is_absolute():

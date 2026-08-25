@@ -1,6 +1,7 @@
 from pathlib import Path
 
-p = Path("database/scripts/vietnam_quick_estimate_smoke.py")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+p = PROJECT_ROOT / "database" / "scripts" / "vietnam_quick_estimate_smoke.py"
 s = p.read_text(encoding="utf-8")
 s = s.replace("from pathlib import Path\n", "from pathlib import Path\nimport sys\n")
 s = s.replace(

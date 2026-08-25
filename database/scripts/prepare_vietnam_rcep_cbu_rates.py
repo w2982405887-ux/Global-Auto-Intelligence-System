@@ -4,8 +4,9 @@ import csv
 from pathlib import Path
 
 
-IN = Path("database/reference_exports/vietnam_fta_8703_rates_extracted_round1.csv")
-OUT = Path("database/reference_exports/vietnam_rcep_8703_cbu_rates_ready_round1.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+IN = PROJECT_ROOT / "database" / "reference_exports" / "vietnam_fta_8703_rates_extracted_round1.csv"
+OUT = PROJECT_ROOT / "database" / "reference_exports" / "vietnam_rcep_8703_cbu_rates_ready_round1.csv"
 
 
 # Decree 129/2022/ND-CP Article 3: Annex A-F are ASEAN, Australia, China,

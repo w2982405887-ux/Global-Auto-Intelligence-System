@@ -650,7 +650,7 @@ export default function AssistantPage() {
               <div className="asst-ws-block">
                 <span className="asst-ws-kicker">环境</span>
                 <code className="asst-ws-env">
-                  后端: http://127.0.0.1:8000<br />
+                  后端: {API_BASE_URL.startsWith("http") ? API_BASE_URL : "当前页面同源代理 /api/v1"}<br />
                   数据库: PostgreSQL (Docker)<br />
                   市场: MY (马来西亚)
                 </code>

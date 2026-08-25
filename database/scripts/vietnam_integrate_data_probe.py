@@ -9,7 +9,7 @@ for line in (root / ".env").read_text(encoding="utf-8").splitlines():
     if "=" in line and not line.strip().startswith("#"):
         k, v = line.split("=", 1)
         env[k.strip()] = v.strip()
-url = f"postgresql+psycopg://{env['POSTGRES_USER']}:{env['POSTGRES_PASSWORD']}@127.0.0.1:{env.get('POSTGRES_PORT','5432')}/{env['POSTGRES_DB']}"
+url = f"postgresql+psycopg://{env['POSTGRES_USER']}:{env['POSTGRES_PASSWORD']}@{env.get('POSTGRES_HOST', '127.0.0.1')}:{env.get('POSTGRES_PORT','5432')}/{env['POSTGRES_DB']}"
 engine = create_engine(url)
 
 queries = {

@@ -1,6 +1,7 @@
 from pathlib import Path
 
-p = Path("backend/app/services/quick_estimate.py")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+p = PROJECT_ROOT / "backend" / "app" / "services" / "quick_estimate.py"
 s = p.read_text(encoding="utf-8")
 s = s.replace(
     "from sqlalchemy.orm import Session\n\n\n",

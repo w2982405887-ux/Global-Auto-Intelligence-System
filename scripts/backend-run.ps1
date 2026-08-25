@@ -1,6 +1,7 @@
 param(
     [ValidateRange(1, 65535)]
-    [int]$Port = 8000
+    [int]$Port = 8000,
+    [string]$BindHost = "127.0.0.1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -61,13 +62,29 @@ $dbPort = if ($postgres.ContainsKey("POSTGRES_PORT")) {
 } else {
     "5432"
 }
-if (-not $postgres.ContainsKey("POSTGRES_PASSWORD")) {
+if (-not $postgres.ContainsKey("GAIS_DATABASE_URL") -and -not $postgres.ContainsKey("POSTGRES_PASSWORD")) {
     throw "POSTGRES_PASSWORD is missing from project .env"
 }
 
-$encodedUser = [uri]::EscapeDataString($dbUser)
-$encodedPassword = [uri]::EscapeDataString($postgres["POSTGRES_PASSWORD"])
-$env:GAIS_DATABASE_URL = "postgresql+psycopg://${encodedUser}:${encodedPassword}@127.0.0.1:${dbPort}/${dbName}"
+$configuredDatabaseUrl = if ($postgres.ContainsKey("GAIS_DATABASE_URL")) {
+    $postgres["GAIS_DATABASE_URL"]
+} else {
+    $null
+}
+if (-not [string]::IsNullOrWhiteSpace($configuredDatabaseUrl)) {
+    # A server may use a managed or remote PostgreSQL instance.  Preserve the
+    # full URL instead of rebuilding it as a local loopback connection.
+    $env:GAIS_DATABASE_URL = $configuredDatabaseUrl
+} else {
+    $dbHost = if ($postgres.ContainsKey("POSTGRES_HOST")) {
+        $postgres["POSTGRES_HOST"]
+    } else {
+        "127.0.0.1"
+    }
+    $encodedUser = [uri]::EscapeDataString($dbUser)
+    $encodedPassword = [uri]::EscapeDataString($postgres["POSTGRES_PASSWORD"])
+    $env:GAIS_DATABASE_URL = "postgresql+psycopg://${encodedUser}:${encodedPassword}@${dbHost}:${dbPort}/${dbName}"
+}
 $env:GAIS_CALCULATION_DSL_PATH = Join-Path $projectRoot "spec\calculation_dsl.schema.json"
 # Never keep provider credentials in this launcher.  Put them in the local
 # .env (or inject them from the server secret store) and forward only the
@@ -235,7 +252,7 @@ if ($env:GAIS_OPENCLAW_ENABLED -ieq "true") {
 
 Push-Location $projectRoot
 try {
-    python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port $Port
+    python -m uvicorn app.main:app --app-dir backend --host $BindHost --port $Port
 }
 finally {
     Pop-Location

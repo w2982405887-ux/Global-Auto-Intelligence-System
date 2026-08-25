@@ -22,7 +22,7 @@ def load_dotenv(path: Path) -> dict[str, str]:
 env = load_dotenv(PROJECT_ROOT / ".env")
 url = (
     f"postgresql+psycopg://{env['POSTGRES_USER']}:{env['POSTGRES_PASSWORD']}"
-    f"@127.0.0.1:{env.get('POSTGRES_PORT', '5432')}/{env['POSTGRES_DB']}"
+    f"@{env.get('POSTGRES_HOST', '127.0.0.1')}:{env.get('POSTGRES_PORT', '5432')}/{env['POSTGRES_DB']}"
 )
 engine = create_engine(url)
 

@@ -5,8 +5,9 @@ import re
 from pathlib import Path
 
 
-EXTRACT_DIR = Path(".tmp/vn_fta_extract")
-OUT = Path("database/reference_exports/vietnam_fta_8703_worklist_round1.csv")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+EXTRACT_DIR = PROJECT_ROOT / ".tmp" / "vn_fta_extract"
+OUT = PROJECT_ROOT / "database" / "reference_exports" / "vietnam_fta_8703_worklist_round1.csv"
 
 
 def agreement_for(name: str) -> str:

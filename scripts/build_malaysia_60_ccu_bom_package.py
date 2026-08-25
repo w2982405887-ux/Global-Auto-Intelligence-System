@@ -22,12 +22,13 @@ def database_url() -> str:
     user = values.get("POSTGRES_USER", "gais")
     password = values.get("POSTGRES_PASSWORD")
     database = values.get("POSTGRES_DB", "global_auto")
+    host = values.get("POSTGRES_HOST", "127.0.0.1")
     port = values.get("POSTGRES_PORT", "5432")
     if not password:
         raise RuntimeError("POSTGRES_PASSWORD is missing from the project .env")
     return (
         f"postgresql+psycopg://{quote_plus(str(user))}:"
-        f"{quote_plus(str(password))}@127.0.0.1:{port}/{database}"
+        f"{quote_plus(str(password))}@{host}:{port}/{database}"
     )
 
 

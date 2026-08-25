@@ -1,6 +1,7 @@
 from pathlib import Path
 
-p = Path("frontend/app/decision/new/page.tsx")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+p = PROJECT_ROOT / "frontend" / "app" / "decision" / "new" / "page.tsx"
 s = p.read_text(encoding="utf-8")
 old = '''                onChange={(event) =>
                   setForm({ ...form, country_iso2: event.target.value })

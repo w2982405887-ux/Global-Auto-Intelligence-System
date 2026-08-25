@@ -10,6 +10,12 @@
 docs/PROJECT_HANDOFF_2026-08-25.md
 ```
 
+AI Harness、OpenClaw、附件处理、内网部署和全天候任务迁移说明：
+
+```text
+docs/AI_HARNESS_OFFLINE_ARCHITECTURE.md
+```
+
 数据库结构快照与恢复说明：
 
 ```text
@@ -86,6 +92,16 @@ docs/malaysia_five_route_tax_model.md
 4. 条件可执行：条件与公式使用结构化 JSON，不执行任意字符串表达式。
 5. 确定性计算：Python 引擎计算，LLM 只做提取、解释和报告。
 6. 审核优先：候选归类、优惠资格和审批状态均保留人工审核入口。
+
+## AI Harness 与保密边界
+
+AI 助手的核心不是某个模型，而是 FastAPI 代理背后的 Harness 控制平面：它负责账号与附件边界、业务上下文、工具白名单、确定性计算、来源门禁、审计和 SSE。OpenClaw 只是可选的模型/执行适配器；旧 LangGraph 代理和未来的本地模型也应通过同一 Harness 接入。
+
+当前项目是“FastAPI + 可选 OpenClaw + Legacy LangGraph + 可选外部模型/搜索”的混合原型，尚未验收为完全内网系统。PDF/DOCX 的文本抽取主要在后端本地完成，扫描 PDF 的生产级 OCR、本地视觉模型、本地向量检索和独立可靠的定时 worker 仍需建设；Brave/Tavily/SearXNG 和云端 OpenAI-compatible 模型属于可关闭的外部依赖。
+
+生产目标是默认不出网的内部助手：本地模型、OCR、检索、PostgreSQL、证据对象存储和调度器都在服务器内网；模型不能获得 SQL、shell、文件系统写权限或数据库凭证；联网采集只能在隔离采集区生成候选证据，再经单向导入和人工/规则审核。完整现状、迁移阶段和验收清单见 `docs/AI_HARNESS_OFFLINE_ARCHITECTURE.md`。
+
+所有部署文档和脚本使用 `<PROJECT_ROOT>` 及相对路径，不依赖某台电脑的绝对目录。密钥、聊天、账号、附件、证据原件和完整数据库备份不提交 GitHub。
 
 ## 本地启动（依赖安装后）
 

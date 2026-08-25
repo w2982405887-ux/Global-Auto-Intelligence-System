@@ -4,10 +4,16 @@
 
 ## 1. 接手者先看这里
 
-真实项目目录：
+项目目录：
 
 ```text
-C:\Users\w2982\Documents\Codex\2026-07-27\kd-hs6\Global-Auto-Intelligence-System
+当前 Git checkout 的仓库根目录（不依赖固定用户目录）
+```
+
+AI Harness、OpenClaw、附件处理、完全内网目标和全天候任务见：
+
+```text
+docs/AI_HARNESS_OFFLINE_ARCHITECTURE.md
 ```
 
 本系统用于汽车企业 CBU（整车进口）与 KD/CKD（散件进口、本地组装）的海关归类、税负计算、优惠匹配、方案比较和政策问答。核心原则是：
@@ -53,7 +59,8 @@ C:\Users\w2982\Documents\Codex\2026-07-27\kd-hs6\Global-Auto-Intelligence-System
 前置：Python 3.12、Node.js 22.13+、Docker Desktop。
 
 ```powershell
-cd "C:\Users\w2982\Documents\Codex\2026-07-27\kd-hs6\Global-Auto-Intelligence-System"
+$repo = (git rev-parse --show-toplevel)
+Set-Location $repo
 docker compose up -d postgres
 .\scripts\backend-run.ps1
 ```
@@ -63,12 +70,14 @@ docker compose up -d postgres
 另开终端：
 
 ```powershell
-cd "C:\Users\w2982\Documents\Codex\2026-07-27\kd-hs6\Global-Auto-Intelligence-System\frontend"
+$repo = (git rev-parse --show-toplevel)
+Set-Location (Join-Path $repo "frontend")
 npm install
 npm run dev -- --host 127.0.0.1 --port 3000
 ```
 
-前端使用同源 `/api/v1`，开发代理固定转发到 `127.0.0.1:8000`。不要在浏览器端硬编码后端绝对地址。
+前端使用同源 `/api/v1`，开发代理默认转发到 `127.0.0.1:8000`，可通过
+`VITE_DEV_API_PROXY_TARGET` 指向服务器或私网中的后端。不要在浏览器端硬编码后端绝对地址。
 
 验证：
 
@@ -147,6 +156,10 @@ gais_web_search
 ```
 
 OpenClaw由 FastAPI 代理，浏览器不能直接访问 Gateway token。OpenClaw默认可关闭并回退旧代理；部署时 `18789` 只能向 FastAPI 私网开放。模型、Gateway和搜索密钥只放 Secret Manager/服务器环境变量。
+
+这里的 FastAPI 代理即当前 Harness 控制平面：负责请求上下文、工具白名单、确定性结果、证据门禁、附件和账号历史。OpenClaw 不是安全边界，也不是完全内网能力的证明。当前仍可配置云端 OpenAI-compatible/DeepSeek 模型和 Brave/Tavily/SearXNG，因此当前状态应标记为“受控混合架构”，不能标记为“完全内网”。扫描 PDF 的生产级 OCR、本地视觉模型、本地向量检索和可靠的独立 scheduler worker 尚未验收。
+
+未来服务器部署应以 `docs/AI_HARNESS_OFFLINE_ARCHITECTURE.md` 的阶段 A-E 为准：先固定 Harness 为唯一入口，再替换为本地模型和本地 OCR/检索；生产默认断网，联网采集放入隔离采集区，只导入候选证据，不直接改写已核验规则。
 
 已知风险：国家参数必须显式传递。马来西亚工具不能被用于回答越南税率；网络搜索只能补证据，不能覆盖确定性数据库结果。
 
@@ -250,6 +263,7 @@ CBU按国家整车税号执行完整进口税链：
 | 越南CBU | 部分完成 | 税号口径/年度税率复核 |
 | 越南CKD进口估算 | 部分完成 | 真实BOM、HS、MFN/RCEP |
 | 越南CKD完整税链 | 急需 | 进口VAT、本地SCT/VAT、98.49 |
-| AI助手/OpenClaw | 部分完成 | 服务器配置与稳定性验收 |
-| 政策自动更新 | 规划中 | 定时采集、人工审核、入库 |
+| AI Harness/OpenClaw 混合链路 | 部分完成 | 工具、附件、回退、私网和稳定性验收 |
+| 完全内网模型/OCR/检索 | 未开始 | 本地模型、OCR、全文/向量索引与断网验收 |
+| 政策自动更新 | 规划中 | 隔离采集、候选证据、审核、幂等和告警 |
 | 代码/数据库交接 | 本次完成 | 绑定远端并交付密钥外备份 |
